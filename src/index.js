@@ -8,7 +8,6 @@ import App3 from './App3';
 import App11 from './App11';
 import Filter from './Filter.js';
 import FetchCSVData from './FetchCSVData';
-import reportWebVitals from './reportWebVitals';
 
 
 const root = ReactDOM.createRoot(document.getElementById('root'));

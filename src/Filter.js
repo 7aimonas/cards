@@ -1,4 +1,4 @@
-import React from 'react';
+import React from "react";
 
 function Filter({
   setFilterParam,
@@ -9,6 +9,11 @@ function Filter({
   filterParam,
   themeFilter,
 }) {
+  // Sort unique themes by the count of items in descending order
+  const sortedThemes = uniqueThemes.sort(
+    (a, b) => themeCounts[b] - themeCounts[a]
+  );
+
   return (
     <div className="filter">
       {/* Region filter */}
@@ -33,7 +38,7 @@ function Filter({
           onChange={(e) => setThemeFilter(e.target.value)}
         >
           <option value="All">Filter By Theme</option>
-          {uniqueThemes.map((theme) => (
+          {sortedThemes.map((theme) => (
             <option key={theme} value={theme}>
               {theme} ({themeCounts[theme]})
             </option>

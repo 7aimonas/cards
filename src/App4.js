@@ -1,15 +1,22 @@
-import React, { useEffect, useState } from "react";
-import { Filter } from "./Filter";
+import React, { useEffect, useState, useCallback } from "react";
+import { Filter } from "./Filter"; // Only import Filter component now
+import SearchForm from "./SearchForm";
+import CardGrid from "./CardGrid";
+import Pagination from "./Pagination";
 
 function App() {
   const [error, setError] = useState(null);
   const [isLoaded, setIsLoaded] = useState(false);
   const [items, setItems] = useState([]);
-  const [q, setQ] = useState(""); // Search query state
-  const [filterParam, setFilterParam] = useState("All"); // Region filter state
-  const [themeFilter, setThemeFilter] = useState("All"); // Theme filter state
+  const [q, setQ] = useState(""); // Search query
+  const [searchParam] = useState(["country", "denomination", "region"]); // Search parameters
+  const [filterParam, setFilterParam] = useState("All"); // Region filter
+  const [themeFilter, setThemeFilter] = useState("All"); // Theme filter
+  const [uniqueThemes, setUniqueThemes] = useState([]);
+  const [themeCounts, setThemeCounts] = useState({});
+  const [regionsCount, setRegionsCount] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
-  const [itemsPerPage] = useState(24); // Number of items per page
+  const [itemsPerPage] = useState(24);
 
   useEffect(() => {
     fetch("https://opensheet.elk.sh/1KNnklCHoG9oiLH6Zu44imt846-VZ6deJw4asdRmbRmg/1")
@@ -18,6 +25,40 @@ function App() {
         (result) => {
           setIsLoaded(true);
           setItems(result);
+
+          // Extract unique themes and calculate the count for each theme
+          const themes = new Set();
+          const counts = {};
+          const regions = {}; // Using an object to store region counts
+
+          result.forEach((item) => {
+            item.theme.split(", ").forEach((tag) => {
+              const trimmedTag = tag.trim();
+              themes.add(trimmedTag);
+
+              if (!counts[trimmedTag]) {
+                counts[trimmedTag] = 0;
+              }
+              counts[trimmedTag]++;
+            });
+
+            // Count items by region
+            if (regions[item.region]) {
+              regions[item.region]++;
+            } else {
+              regions[item.region] = 1;
+            }
+          });
+
+          setUniqueThemes(Array.from(themes));
+          setThemeCounts(counts);
+
+          // Convert the regions object into an array of objects and sort by region name
+          const regionCountsArray = Object.entries(regions)
+            .map(([region, count]) => ({ region, count }))
+            .sort((a, b) => a.region.localeCompare(b.region)); // Alphabetically sort regions
+
+          setRegionsCount(regionCountsArray); // Set the regions count
         },
         (error) => {
           setIsLoaded(true);
@@ -26,50 +67,37 @@ function App() {
       );
   }, []);
 
-  const data = Object.values(items); // Convert the data to an array for easier manipulation
+  const data = Object.values(items);
 
-  // Create a unique list of themes and regions
-  const uniqueThemes = [...new Set(data.flatMap((item) => item.theme.split(", ")))];
-  const themeCounts = uniqueThemes.reduce((acc, theme) => {
-    acc[theme] = data.filter((item) => item.theme.split(", ").includes(theme)).length;
-    return acc;
-  }, {});
-
-  const regions = [...new Set(data.map((item) => item.region))];
-  const regionsCount = regions.map((region) => ({
-    region,
-    count: data.filter((item) => item.region === region).length,
-  }));
-
-  // Filter function to handle both region and theme filtering
-  const filterItems = (items) => {
+  // Filter function moved here in App.js
+  const filterItems = (items, searchQuery, searchParam, region, theme) => {
     return items.filter((item) => {
-      // Filter by region
-      const matchesRegion =
-        filterParam === "All" || item.region === filterParam;
-
-      // Filter by theme
-      const matchesTheme =
-        themeFilter === "All" ||
-        item.theme.split(", ").includes(themeFilter);
-
-      return matchesRegion && matchesTheme;
-    });
-  };
-
-  // Search function to filter by query string
-  const searchItems = (items) => {
-    return items.filter((item) => {
-      return (
-        ["country", "denomination", "region"].some((param) =>
-          item[param].toString().toLowerCase().includes(q.toLowerCase())
-        )
+      const searchMatch = searchParam.some((param) =>
+        item[param].toString().toLowerCase().includes(searchQuery.toLowerCase())
       );
+
+      const regionMatch = region === "All" || item.region === region;
+
+      const themeMatch =
+        theme === "All" ||
+        item.theme.split(", ").some((itemTheme) => itemTheme === theme);
+
+      return searchMatch && regionMatch && themeMatch;
     });
   };
 
-  // Pagination logic
-  const filteredItems = filterItems(searchItems(data));
+  // Reset to page 1 when filter, themeFilter, or search query changes
+  const resetPage = useCallback(() => {
+    setCurrentPage(1);
+  }, []);
+
+  useEffect(() => {
+    resetPage(); // Reset page when q, filterParam, or themeFilter changes
+  }, [q, filterParam, themeFilter, resetPage]);
+
+  // Use filterItems function here to filter data
+  const filteredItems = filterItems(data, q, searchParam, filterParam, themeFilter);
+
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
   const currentItems = filteredItems.slice(indexOfFirstItem, indexOfLastItem);
@@ -79,97 +107,46 @@ function App() {
     setCurrentPage(pageNumber);
   };
 
-  // Reset filters function
+  // Function to reset filters
   const resetFilters = () => {
-    setQ(""); // Clear search input
+    setQ(""); // Reset search query
     setFilterParam("All"); // Reset region filter
     setThemeFilter("All"); // Reset theme filter
-    setCurrentPage(1); // Reset pagination to page 1
+    setCurrentPage(1); // Reset pagination to first page
   };
 
   if (error) {
-    return <p>{error.message}</p>;
+    return (
+      <p>
+        {error.message}, if you get this error, the free API I used might have stopped working, but I created a simple example that demonstrates how this works,{" "}
+        <a href="https://codepen.io/Spruce_khalifa/pen/mdXEVKq">check it out</a>
+      </p>
+    );
   } else if (!isLoaded) {
-    return <>Loading...</>;
+    return <>loading...</>;
   } else {
     return (
       <div className="wrapper">
-        {/* Filter and Search */}
-        <div className="search-wrapper">
-          <label htmlFor="search-form">
-            <input
-              type="search"
-              id="search-form"
-              placeholder="Search for..."
-              value={q}
-              onChange={(e) => setQ(e.target.value)}
-            />
-          </label>
-
-          {/* Filters */}
-          <Filter
-            filterParam={filterParam}
-            setFilterParam={setFilterParam}
-            themeFilter={themeFilter}
-            setThemeFilter={setThemeFilter}
-            uniqueThemes={uniqueThemes}
-            themeCounts={themeCounts}
-            regionsCount={regionsCount}
-          />
-
-          {/* Reset Filters Button */}
-          <button onClick={resetFilters} className="reset-filters-btn">
-            Reset Filters
-          </button>
-        </div>
-
-        {/* Card Grid */}
-        <ul className="card-grid">
-          {currentItems.map((item) => (
-            <li key={item.id} className="card">
-              <div
-                className="card-image"
-                onClick={() => window.open(item.link, "_blank")}
-              >
-                <img src={item.img} alt={item.country} />
-              </div>
-              <div className="card-content">
-                <h2 className="card-name">{item.country}</h2>
-                <ol className="card-list">
-                  <li>Denomination: {item.denomination}</li>
-                  <li>Region: {item.region}</li>
-                  <li>Date: {item.year}</li>
-                  <li>Theme: {item.theme}</li>
-                </ol>
-              </div>
-            </li>
-          ))}
-        </ul>
-
-        {/* Pagination Controls */}
-        <div className="pagination">
-          <button
-            onClick={() => handlePageChange(currentPage - 1)}
-            disabled={currentPage === 1}
-          >
-            Previous
-          </button>
-          {[...Array(totalPages).keys()].map((number) => (
-            <button
-              key={number + 1}
-              onClick={() => handlePageChange(number + 1)}
-              className={number + 1 === currentPage ? "active" : ""}
-            >
-              {number + 1}
-            </button>
-          ))}
-          <button
-            onClick={() => handlePageChange(currentPage + 1)}
-            disabled={currentPage === totalPages}
-          >
-            Next
-          </button>
-        </div>
+        <SearchForm q={q} setQ={setQ} />
+        <Filter
+          setFilterParam={setFilterParam}
+          setThemeFilter={setThemeFilter}
+          uniqueThemes={uniqueThemes}
+          themeCounts={themeCounts}
+          regionsCount={regionsCount}
+          filterParam={filterParam} // Pass the filterParam as a prop
+          themeFilter={themeFilter} // Pass the themeFilter as a prop
+        />
+        {/* Reset Filters Button */}
+        <button onClick={resetFilters} className="reset-filters-btn">
+          Reset Filters
+        </button>
+        <CardGrid currentItems={currentItems} />
+        <Pagination
+          currentPage={currentPage}
+          totalPages={totalPages}
+          handlePageChange={handlePageChange}
+        />
       </div>
     );
   }

@@ -7,7 +7,7 @@ function App() {
   const [items, setItems] = useState([]);
   const [q, setQ] = useState("");
   const [searchParam] = useState(["country", "denomination", "region"]);
-  const [filterParam, setFilterParam] = useState(["All"]);
+  const [filterParam, setFilterParam] = useState("All");
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage] = useState(24); // Number of items per page
 
@@ -197,6 +197,9 @@ function App() {
           </button>
         </div>
       </div>
+
+
+
     );
   }
 }

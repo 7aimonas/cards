@@ -5,12 +5,22 @@ function CardGrid({ currentItems }) {
     <ul className="card-grid">
       {currentItems.map((item) => (
         <div className="card" key={item.id}>
-          <div
-            className="card-image"
-            onClick={() => {
-              window.open(item.link, "_blank", "noopener,noreferrer");
-            }}
-          >
+            <div
+              className="card-image"
+              onClick={() => {
+                const openLink = (url) => {
+                  const link = document.createElement("a");
+                  link.href = url;
+                  link.target = "_blank";
+                  link.rel = "noopener noreferrer";
+                  document.body.appendChild(link);
+                  link.click();
+                  document.body.removeChild(link);
+                };
+
+                openLink(item.link);
+              }}
+            >
             <img src={item.img || "https://lh3.googleusercontent.com/pw/AP1GczPRdJCisYdBa0OwGwJ5UmWVeBi3ZHNUq02HrNGQjpUw9HDyehwb_Q3_3J2cBFgfMv7yUJCH8cuMdxeiguNQ1GcGcF3ZQ04YFCsouCgCAZ83-QvxV_zgWMQnJ2hJGp_egVnp570bT1P8k2Hs6PYNjNpt=w300-h150-s-no-gm?authuser=0"} alt={item.country} />
           </div>
           <div className="card-content">

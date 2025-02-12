@@ -1,22 +1,24 @@
 import React, { useEffect, useState, useCallback } from "react";
-import { Filter } from "./Filter"; // Only import Filter component now
+import { Filter } from "./Filter"; 
 import SearchForm from "./SearchForm";
 import CardGrid from "./CardGrid";
 import Pagination from "./Pagination";
+import { ExpandableFilter } from "./ExpandableFilter"; 
 
 function App() {
   const [error, setError] = useState(null);
   const [isLoaded, setIsLoaded] = useState(false);
   const [items, setItems] = useState([]);
-  const [q, setQ] = useState(""); // Search query
-  const [searchParam] = useState(["country", "denomination", "region"]); // Search parameters
-  const [filterParam, setFilterParam] = useState("All"); // Region filter
-  const [themeFilter, setThemeFilter] = useState("All"); // Theme filter
+  const [q, setQ] = useState("");
+  const [searchParam] = useState(["country", "denomination", "region"]);
+  const [filterParam, setFilterParam] = useState("All");
+  const [themeFilter, setThemeFilter] = useState("All");
   const [uniqueThemes, setUniqueThemes] = useState([]);
   const [themeCounts, setThemeCounts] = useState({});
   const [regionsCount, setRegionsCount] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage] = useState(24);
+  const [isHeaderVisible, setIsHeaderVisible] = useState(false); // state for header visibility
 
   useEffect(() => {
     fetch("https://opensheet.elk.sh/1KNnklCHoG9oiLH6Zu44imt846-VZ6deJw4asdRmbRmg/1")
@@ -25,40 +27,7 @@ function App() {
         (result) => {
           setIsLoaded(true);
           setItems(result);
-
-          // Extract unique themes and calculate the count for each theme
-          const themes = new Set();
-          const counts = {};
-          const regions = {}; // Using an object to store region counts
-
-          result.forEach((item) => {
-            item.theme.split(", ").forEach((tag) => {
-              const trimmedTag = tag.trim();
-              themes.add(trimmedTag);
-
-              if (!counts[trimmedTag]) {
-                counts[trimmedTag] = 0;
-              }
-              counts[trimmedTag]++;
-            });
-
-            // Count items by region
-            if (regions[item.region]) {
-              regions[item.region]++;
-            } else {
-              regions[item.region] = 1;
-            }
-          });
-
-          setUniqueThemes(Array.from(themes));
-          setThemeCounts(counts);
-
-          // Convert the regions object into an array of objects and sort by region name
-          const regionCountsArray = Object.entries(regions)
-            .map(([region, count]) => ({ region, count }))
-            .sort((a, b) => a.region.localeCompare(b.region)); // Alphabetically sort regions
-
-          setRegionsCount(regionCountsArray); // Set the regions count
+          recalculateCounts(result);
         },
         (error) => {
           setIsLoaded(true);
@@ -67,9 +36,39 @@ function App() {
       );
   }, []);
 
-  const data = Object.values(items);
+  const recalculateCounts = (items) => {
+    const themes = new Set();
+    const counts = {};
+    const regions = {};
 
-  // Filter function moved here in App.js
+    items.forEach((item) => {
+      item.theme.split(", ").forEach((tag) => {
+        const trimmedTag = tag.trim();
+        themes.add(trimmedTag);
+
+        if (!counts[trimmedTag]) {
+          counts[trimmedTag] = 0;
+        }
+        counts[trimmedTag]++;
+      });
+
+      if (regions[item.region]) {
+        regions[item.region]++;
+      } else {
+        regions[item.region] = 1;
+      }
+    });
+
+    setUniqueThemes(Array.from(themes));
+    setThemeCounts(counts);
+
+    const regionCountsArray = Object.entries(regions)
+      .map(([region, count]) => ({ region, count }))
+      .sort((a, b) => a.region.localeCompare(b.region));
+
+    setRegionsCount(regionCountsArray);
+  };
+
   const filterItems = (items, searchQuery, searchParam, region, theme) => {
     return items.filter((item) => {
       const searchMatch = searchParam.some((param) =>
@@ -86,17 +85,15 @@ function App() {
     });
   };
 
-  // Reset to page 1 when filter, themeFilter, or search query changes
   const resetPage = useCallback(() => {
     setCurrentPage(1);
   }, []);
 
   useEffect(() => {
-    resetPage(); // Reset page when q, filterParam, or themeFilter changes
+    resetPage();
   }, [q, filterParam, themeFilter, resetPage]);
 
-  // Use filterItems function here to filter data
-  const filteredItems = filterItems(data, q, searchParam, filterParam, themeFilter);
+  const filteredItems = filterItems(items, q, searchParam, filterParam, themeFilter);
 
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
@@ -105,14 +102,53 @@ function App() {
 
   const handlePageChange = (pageNumber) => {
     setCurrentPage(pageNumber);
+    window.scrollTo(0, 0);
   };
 
-  // Function to reset filters
   const resetFilters = () => {
-    setQ(""); // Reset search query
-    setFilterParam("All"); // Reset region filter
-    setThemeFilter("All"); // Reset theme filter
-    setCurrentPage(1); // Reset pagination to first page
+    setQ("");
+    setFilterParam("All");
+    setThemeFilter("All");
+    setCurrentPage(1);
+  };
+
+  const getRegionCount = (region) => {
+    return filteredItems.filter((item) => item.region === region).length;
+  };
+
+  const getThemeCount = (theme) => {
+    return filteredItems.filter((item) => item.theme.split(", ").includes(theme)).length;
+  };
+
+  const getDynamicRegionOptions = () => {
+    return regionsCount
+      .filter((regionObj) => getRegionCount(regionObj.region) > 0)
+      .map((regionObj) => ({
+        value: regionObj.region,
+        label: `${regionObj.region} (${getRegionCount(regionObj.region)})`,
+      }));
+  };
+
+  const getDynamicThemeOptions = () => {
+    const themeOptions = uniqueThemes
+      .filter((theme) => getThemeCount(theme) > 0)
+      .map((theme) => ({
+        value: theme,
+        label: `${theme} (${getThemeCount(theme)})`,
+      }));
+
+    themeOptions.sort((a, b) => {
+      const countA = parseInt(a.label.split('(')[1].split(')')[0]);
+      const countB = parseInt(b.label.split('(')[1].split(')')[0]);
+      return countB - countA;
+    });
+
+    return themeOptions;
+  };
+
+  // Toggle Header visibility
+  const toggleHeader = () => {
+    setIsHeaderVisible((prev) => !prev);
   };
 
   if (error) {
@@ -127,26 +163,39 @@ function App() {
   } else {
     return (
       <div className="wrapper">
-        <SearchForm q={q} setQ={setQ} />
-        <Filter
-          setFilterParam={setFilterParam}
-          setThemeFilter={setThemeFilter}
-          uniqueThemes={uniqueThemes}
-          themeCounts={themeCounts}
-          regionsCount={regionsCount}
-          filterParam={filterParam} // Pass the filterParam as a prop
-          themeFilter={themeFilter} // Pass the themeFilter as a prop
-        />
-        {/* Reset Filters Button */}
-        <button onClick={resetFilters} className="reset-filters-btn">
-          Reset Filters
+        <div className="search-wrapper">
+        <button onClick={toggleHeader} className={`header-toggle-btn ${isHeaderVisible ? 'active' : ''}`}>
+          <span className="hamburger-line"></span>
+          <span className="hamburger-line"></span>
+          <span className="hamburger-line"></span>
         </button>
-        <CardGrid currentItems={currentItems} />
-        <Pagination
-          currentPage={currentPage}
-          totalPages={totalPages}
-          handlePageChange={handlePageChange}
-        />
+        <div className={`header ${isHeaderVisible ? "show" : ""}`}>
+          <SearchForm q={q} setQ={setQ} />
+          <ExpandableFilter
+            title="Filter by Region"
+            options={getDynamicRegionOptions()}
+            selectedOption={filterParam}
+            onSelectOption={setFilterParam}
+          />
+          <ExpandableFilter
+            title="Filter by Theme"
+            options={getDynamicThemeOptions()}
+            selectedOption={themeFilter}
+            onSelectOption={setThemeFilter}
+          />
+          <button onClick={resetFilters} className="reset-filters-btn">
+            Reset Filters
+          </button>
+        </div>
+        </div>
+        <div className={`content ${isHeaderVisible ? 'shifted' : ''}`}>
+          <CardGrid currentItems={currentItems} />
+          <Pagination
+            currentPage={currentPage}
+            totalPages={totalPages}
+            handlePageChange={handlePageChange}
+          />
+        </div>
       </div>
     );
   }

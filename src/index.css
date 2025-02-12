@@ -40,25 +40,27 @@ body {
 }
 h1,
 h2 {
-    heigh: 18px;
+    heigh: 12px;
 }
 .wrapper {
-    width: 96%;
+    width: 80%;
     max-width: 1140px;
     margin: 0 auto;
 }
 .card-grid {
     margin: 2em 0;
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
     grid-gap: 3px;
 }
+
 .card {
-    transform: scale(0.97);
+    transform: scale(0.98);
     background-color: var(--bg-offset);
-    padding: 0px;
+    margin: 7px;
+    padding: 5px;
     box-shadow: 0px 2px 4px var(--border);
-    transition: all 0.3s cubic-bezier(0.075, 0.82, 0.165, 1);
+    transition: all 150ms cubic-bezier(0.075, 0.82, 0.165, 1);
 
     &:hover {
         transform: scale(1.0);
@@ -78,28 +80,28 @@ h2 {
     overflow: hidden;
 }
 .card-image img {
-    margin-top: -0px;
+    margin-top: 0px;
     min-height: 100%;
     width: 100%;
     object-fit: cover;
     object-position: center;
 }
 .card-content {
-    padding: 32px 15px;
+    padding: 15px 10px;
 
     h2 {
         display: -webkit-box;
-        -webkit-line-clamp: 1;
+        -webkit-line-clamp: 2;
         -webkit-box-orient: vertical;
         overflow: hidden;
     }
 }
 .card-list {
-    margin-top: 16px;
+    margin-top: 10px;
 
     li {
         color: var(--text);
-        margin-top: 8px;
+        margin-top: 5px;
 
         span {
             color: var(--gray);
@@ -170,7 +172,7 @@ select {
     min-width: 15ch;
     max-width: 30ch;
     cursor: pointer;
-    line-height: 1.1;
+    line-height: 1;
     background-color: transparent;
     display: grid;
     grid-template-areas: "select";
@@ -238,5 +240,128 @@ select:focus + .focus {
   
   .reset-filters-btn:hover {
     background-color: #ff4500;
+  }
+  
+  
+
+  .expandable-filter {
+    min-width: 15ch;
+    max-width: 50ch;
+    cursor: pointer;
+    line-height: 1;
+    background-color: transparent;
+    display: grid;
+    grid-template-areas: "select";
+    align-items: center;
+    position: relative;
+    box-shadow: 0px 4px 6px var(--border);
+    transition: all 0.4s cubic-bezier(0.215, 0.61, 0.355, 1);
+
+    &:hover {
+        box-shadow: 0px 0px 0px var(--border);
+    }
+
+
+  }
+  
+  .filter-header {
+    cursor: pointer;
+    font-weight: bold;
+    padding: 10px;
+  }
+  
+ 
+  
+  .filter-options {
+    padding: 10px;
+  }
+  
+  .filter-option {
+    display: block;
+    margin: 5px 0;
+  }
+
+  .react-select__control {
+    border-radius: 5px;
+    box-shadow: none;
+  }
+  
+  .react-select__menu {
+    max-height: 200px;
+    overflow-y: auto;
+  }
+  
+
+
+
+/* Header toggle button */
+.header-toggle-btn {
+    position: fixed;
+    top: 20px;
+    left: 20px;
+    background: transparent;
+    border: none;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+    width: 30px;
+    height: 25px;
+    padding: 0;
+    cursor: pointer;
+    z-index: 100;
+  }
+  
+  .header-toggle-btn .hamburger-line {
+    width: 30px;
+    height: 4px;
+    background-color: #333;
+    transition: 0.3s;
+  }
+  
+  .header-toggle-btn.active .hamburger-line:nth-child(1) {
+    transform: rotate(45deg);
+    position: relative;
+    top: 8px;
+  }
+  
+  .header-toggle-btn.active .hamburger-line:nth-child(2) {
+    opacity: 0;
+  }
+  
+  .header-toggle-btn.active .hamburger-line:nth-child(3) {
+    transform: rotate(-45deg);
+    position: relative;
+    top: -8px;
+  }
+  
+  /* Wrapper and Header */
+  .wrapper {
+    display: flex;
+    flex-direction: column;
+    transition: 0.3s ease;
+  }
+  
+  .header {
+    width: 100%;
+    position: fixed;
+    top: -100%; /* Initially hidden */
+    left: 0;
+    background: #fff;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+    transition: top 0.3s ease;
+    z-index: 10;
+  }
+  
+  .header.show {
+    top: 0px; /* Set it to the desired height */
+  }
+  
+  .content {
+    margin-top: 10px;
+    transition: margin-top 0.3s ease;
+  }
+  
+  .content.shifted {
+    margin-top: 220px; /* Adjust this value to match the header's height */
   }
   

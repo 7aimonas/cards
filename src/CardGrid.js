@@ -8,7 +8,7 @@ function CardGrid({ currentItems }) {
           <div
             className="card-image"
             onClick={() => {
-              window.open(item.link, "_blank");
+              window.open(item.link, "_blank", "noopener,noreferrer");
             }}
           >
             <img src={item.img || "https://lh3.googleusercontent.com/pw/AP1GczPRdJCisYdBa0OwGwJ5UmWVeBi3ZHNUq02HrNGQjpUw9HDyehwb_Q3_3J2cBFgfMv7yUJCH8cuMdxeiguNQ1GcGcF3ZQ04YFCsouCgCAZ83-QvxV_zgWMQnJ2hJGp_egVnp570bT1P8k2Hs6PYNjNpt=w300-h150-s-no-gm?authuser=0"} alt={item.country} />

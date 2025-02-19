@@ -41,12 +41,15 @@ function CardGrid({ currentItems }) {
               </li>
               <li>
                 Mintage: 
-                {item.mintage && item.mintage.length > 0 ? <span> {item.mintage}</span> : <span> n/a</span>}
-                
+                {item.mintage && item.mintage.length > 0 ? <span> {item.mintage}</span> : <span> Unknown</span>}
+              </li>
+              <li>
+                Mint: 
+                {item.mint && item.mint.length > 0 ? <span> {item.mint}</span> : <span> Unknown</span>}
               </li>
               <li>
                 Theme: 
-                {item.theme && item.theme.length > 0 ? <span> {item.theme}</span> : <span> n/a</span>}
+                {item.theme && item.theme.length > 0 ? <span> {item.subject}</span> : <span> n/a</span>}
               </li>
             </ol>
           </div>

@@ -2,7 +2,7 @@ import React from "react";
 
 function SearchForm({ q, setQ }) {
   return (
-    <div className="search-wrapper">
+    
       <label htmlFor="search-form">
         <input
           type="search"
@@ -15,7 +15,7 @@ function SearchForm({ q, setQ }) {
         />
         <span className="sr-only">Search countries here</span>
       </label>
-    </div>
+    
   );
 }
 

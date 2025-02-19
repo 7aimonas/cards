@@ -170,7 +170,7 @@ function App() {
           <span className="hamburger-line"></span>
         </button>
         <div className={`header ${isHeaderVisible ? "show" : ""}`}>
-          <SearchForm q={q} setQ={setQ} />
+          <SearchForm className="search-input" q={q} setQ={setQ} />
           <ExpandableFilter
             title="Filter by Region"
             options={getDynamicRegionOptions()}

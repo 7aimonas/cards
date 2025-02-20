@@ -1,6 +1,6 @@
 import React from "react";
 
-function CardGrid({ currentItems }) {
+function CardGrid({ currentItems, isCardContentVisible }) {
   return (
     <ul className="card-grid">
       {currentItems.map((item) => (
@@ -21,9 +21,14 @@ function CardGrid({ currentItems }) {
                 openLink(item.link);
               }}
             >
-            <img src={item.img || "https://lh3.googleusercontent.com/pw/AP1GczPRdJCisYdBa0OwGwJ5UmWVeBi3ZHNUq02HrNGQjpUw9HDyehwb_Q3_3J2cBFgfMv7yUJCH8cuMdxeiguNQ1GcGcF3ZQ04YFCsouCgCAZ83-QvxV_zgWMQnJ2hJGp_egVnp570bT1P8k2Hs6PYNjNpt=w300-h150-s-no-gm?authuser=0"} alt={item.country} />
+            <img 
+            src={item.img || "https://lh3.googleusercontent.com/pw/AP1GczPRdJCisYdBa0OwGwJ5UmWVeBi3ZHNUq02HrNGQjpUw9HDyehwb_Q3_3J2cBFgfMv7yUJCH8cuMdxeiguNQ1GcGcF3ZQ04YFCsouCgCAZ83-QvxV_zgWMQnJ2hJGp_egVnp570bT1P8k2Hs6PYNjNpt=w300-h150-s-no-gm?authuser=0"} 
+            alt={`${item.country} ${item.denomination} ${item.year}`}
+            />
           </div>
-          <div className="card-content">
+
+          
+          <div className={`card-content ${isCardContentVisible ? "" : "hide"}`}>
             <h2 className="card-name">{item.country}</h2>
             <ol className="card-list">
               <li>
@@ -53,6 +58,7 @@ function CardGrid({ currentItems }) {
               </li>
             </ol>
           </div>
+         
         </div>
       ))}
     </ul>

@@ -19,6 +19,7 @@ function App() {
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage] = useState(24);
   const [isHeaderVisible, setIsHeaderVisible] = useState(false); // state for header visibility
+  const [isCardContentVisible, setIsCardContentVisible] = useState(true); 
 
   useEffect(() => {
     fetch("https://opensheet.elk.sh/1KNnklCHoG9oiLH6Zu44imt846-VZ6deJw4asdRmbRmg/1")
@@ -151,6 +152,11 @@ function App() {
     setIsHeaderVisible((prev) => !prev);
   };
 
+  // Toggle card-content visibility
+  const toggleCardContent = () => {
+    setIsCardContentVisible((prev) => !prev);
+  };
+
   if (error) {
     return (
       <p>
@@ -183,13 +189,25 @@ function App() {
             selectedOption={themeFilter}
             onSelectOption={setThemeFilter}
           />
-          <button onClick={resetFilters} className="reset-filters-btn">
-            Reset Filters
-          </button>
+          <div className="multiple-buttons">
+            <button onClick={resetFilters} className="reset-filters-btn">
+              Reset Filters
+            </button>
+            
+            <button onClick={toggleCardContent} className={`toggle-content-btn ${isCardContentVisible ? "" : "active"}`}> 
+            {`${isCardContentVisible ? "Hide Info" : "Show Info"}`}
+            </button>
+            
+            
+          </div>  
+          
         </div>
         </div>
         <div className={`content ${isHeaderVisible ? 'shifted' : ''}`}>
-          <CardGrid currentItems={currentItems} />
+          <CardGrid 
+            currentItems={currentItems} 
+            isCardContentVisible={isCardContentVisible} 
+          />
           <Pagination
             currentPage={currentPage}
             totalPages={totalPages}

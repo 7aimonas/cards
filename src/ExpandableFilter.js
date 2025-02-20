@@ -35,7 +35,7 @@ function ExpandableFilter({ title, options, selectedOption, onSelectOption }) {
     <div className="react-select">
       <Select
         options={options}
-        value={options.find((option) => option.value === selectedOption)}
+        value={options.find((option) => option.value === selectedOption) || null}
         onChange={handleChange}
         placeholder={`${title}`}
         isClearable={true}

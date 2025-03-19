@@ -6,6 +6,8 @@ const customStyles = {
     ...provided,
     backgroundColor: "var(--bg-offset)",
     border: "1px solid var(--border)",
+    height: "100%",
+    maxHeight: "7ch",
     boxShadow: state.isFocused || state.isHovered ? "none" : "0px 4px 6px var(--border)",  // Shadow disappears on hover
     padding: "0.6em 1em",
     transition: "all 0.4s cubic-bezier(0.215, 0.61, 0.355, 1)",
@@ -15,13 +17,14 @@ const customStyles = {
   }),
   option: (provided, state) => ({
     ...provided,
-    backgroundColor: state.isFocused ? "var(--bg-offset-hover)" : "transparent",
+    backgroundColor: state.isFocused ? "#f0f0f0" : "transparent",
     cursor: "pointer",
   }),
   menu: (provided) => ({
     ...provided,
     boxShadow: "0px 4px 6px var(--border)",
     border: "1px solid var(--border)",
+    
   }),
 };
 

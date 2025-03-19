@@ -2,6 +2,9 @@ import React, { useEffect, useState, useCallback } from "react";
 import { Filter } from "./Filter"; 
 import SearchForm from "./SearchForm";
 import CardGrid from "./CardGrid";
+import Combobox from "./Combobox";
+import "react-widgets/styles.css";
+import InfoOverlay from "./ModalInfo";
 import Pagination from "./Pagination";
 import { ExpandableFilter } from "./ExpandableFilter"; 
 
@@ -10,16 +13,18 @@ function App() {
   const [isLoaded, setIsLoaded] = useState(false);
   const [items, setItems] = useState([]);
   const [q, setQ] = useState("");
-  const [searchParam] = useState(["country", "denomination", "region"]);
+  const [searchParam] = useState(["country", "denomination", "country_search"]);
   const [filterParam, setFilterParam] = useState("All");
   const [themeFilter, setThemeFilter] = useState("All");
   const [uniqueThemes, setUniqueThemes] = useState([]);
+  const [uniqueCountries, setUniqueCountries] = useState([]); // Store country list
   const [themeCounts, setThemeCounts] = useState({});
   const [regionsCount, setRegionsCount] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage] = useState(24);
   const [isHeaderVisible, setIsHeaderVisible] = useState(false); // state for header visibility
   const [isCardContentVisible, setIsCardContentVisible] = useState(true); 
+  const [infoOpen, setInfoOpen] = useState(false); // info overlay visibility
 
   useEffect(() => {
     fetch("https://opensheet.elk.sh/1KNnklCHoG9oiLH6Zu44imt846-VZ6deJw4asdRmbRmg/1")
@@ -36,6 +41,15 @@ function App() {
         }
       );
   }, []);
+
+  useEffect(() => {
+    if (items.length > 0) {
+      const countrySet = new Set(items.map((item) => item.country.trim())); 
+      setUniqueCountries(Array.from(countrySet)); // Convert Set to array
+    }
+  }, [items]); // Runs when `items` updates
+  
+ 
 
   const recalculateCounts = (items) => {
     const themes = new Set();
@@ -70,17 +84,15 @@ function App() {
     setRegionsCount(regionCountsArray);
   };
 
-  const filterItems = (items, searchQuery, searchParam, region, theme) => {
+  const filterItems = (items, searchQuery, searchParam, region, theme, country) => {
     return items.filter((item) => {
       const searchMatch = searchParam.some((param) =>
-        item[param].toString().toLowerCase().includes(searchQuery.toLowerCase())
+        item[param]?.toString().toLowerCase().includes(searchQuery.toLowerCase())
       );
 
       const regionMatch = region === "All" || item.region === region;
-
-      const themeMatch =
-        theme === "All" ||
-        item.theme.split(", ").some((itemTheme) => itemTheme === theme);
+      const themeMatch = theme === "All" || item.theme.split(", ").some((itemTheme) => itemTheme === theme);
+      
 
       return searchMatch && regionMatch && themeMatch;
     });
@@ -105,6 +117,12 @@ function App() {
     setCurrentPage(pageNumber);
     window.scrollTo(0, 0);
   };
+
+  const onPageChanged = (pageNumber) => {
+    setCurrentPage(pageNumber);
+    window.scrollTo(0, 0);
+  };
+  
 
   const resetFilters = () => {
     setQ("");
@@ -169,22 +187,33 @@ function App() {
   } else {
     return (
       <div className="wrapper">
-        <div className="search-wrapper">
+        
         <button onClick={toggleHeader} className={`header-toggle-btn ${isHeaderVisible ? 'active' : ''}`}>
           <span className="hamburger-line"></span>
           <span className="hamburger-line"></span>
           <span className="hamburger-line"></span>
         </button>
+          <div>
+            <button onClick={() => setInfoOpen(true)} className="info-button">
+              i
+            </button>
+            {infoOpen && 
+            <InfoOverlay 
+            countriesAmount={`${uniqueCountries.length}`} 
+            coinsAmount={`${items.length}`}
+            onClose={() => setInfoOpen(false)} />}
+          </div>
         <div className={`header ${isHeaderVisible ? "show" : ""}`}>
-          <SearchForm className="search-input" q={q} setQ={setQ} />
+          <SearchForm className="search-input" q={q} setQ={setQ} options={uniqueCountries} />
+          
           <ExpandableFilter
-            title="Filter by Region"
+            title="Region"
             options={getDynamicRegionOptions()}
             selectedOption={filterParam}
             onSelectOption={setFilterParam}
           />
           <ExpandableFilter
-            title="Filter by Theme"
+            title="Theme"
             options={getDynamicThemeOptions()}
             selectedOption={themeFilter}
             onSelectOption={setThemeFilter}
@@ -202,18 +231,18 @@ function App() {
           </div>  
           
         </div>
-        </div>
+       
         <div className={`content ${isHeaderVisible ? 'shifted' : ''}`}>
           <CardGrid 
             currentItems={currentItems} 
             isCardContentVisible={isCardContentVisible} 
           />
-          <Pagination
-            currentPage={currentPage}
-            totalPages={totalPages}
-            handlePageChange={handlePageChange}
-          />
         </div>
+          <Pagination
+              currentPage={currentPage}
+              totalPages={totalPages}
+              handlePageChange={handlePageChange}
+          />
       </div>
     );
   }

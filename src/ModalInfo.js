@@ -14,10 +14,7 @@ function InfoOverlay({ onClose, countriesAmount, coinsAmount }) {
             Currently it consists of <b>{`${coinsAmount}`}</b> coins from <b>{`${countriesAmount}`}</b> countries and territories. 
             
           </div>
-          <img src={modalImageUrl} alt="Full Image" className="modal-image" />
-          <br></br> test image load unedited pic below:
-          <br></br>
-          <img src={modalImageUrl2} alt="Full Image 2" className="modal-image" />
+         
           <br></br>
           <button className="close-button" onClick={onClose}>
             Close

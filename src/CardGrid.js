@@ -55,7 +55,7 @@ function CardGrid({ currentItems, isCardContentVisible }) {
               onClick={() => {
                 setModalItem(item);
                 setIsOpen(true);
-                setIsImageLoaded(false);
+                
               }}
             >
               <img 
@@ -104,18 +104,16 @@ function CardGrid({ currentItems, isCardContentVisible }) {
             <button onClick={() => setIsOpen(false)} className="close-button">&times;</button>
             <button onClick={handlePrevious} className="prev-button">&#12296;</button>
            
-            {isImageLoaded ? (
+            
               <img 
                 src={modalItem.link} 
                 alt={`${modalItem.country} ${modalItem.denomination} ${modalItem.year}`} 
-                className="modal-image"
                 onLoad={() => setIsImageLoaded(true)}
+                className={`modal-image ${isImageLoaded ? "" : "loading"}`}
               />
-            ) : (
-              <LoadingContainer />
-            )}
+            
 
-            <div className="modal-text">
+            <div className={`modal-text ${isImageLoaded ? "" : "loading"}`}>
               <b>{`${modalItem.country}`}</b>
             <br />
             {`${modalItem.denomination} ${modalItem.year}`}

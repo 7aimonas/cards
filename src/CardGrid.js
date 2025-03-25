@@ -11,6 +11,7 @@ function CardGrid({ currentItems, isCardContentVisible }) {
       const currentIndex = currentItems.findIndex(item => item.id === modalItem.id);
       if (currentIndex < currentItems.length - 1) {
         setModalItem(currentItems[currentIndex + 1]);
+        setIsImageLoaded(false);
         
       }
     }
@@ -21,7 +22,7 @@ function CardGrid({ currentItems, isCardContentVisible }) {
       const currentIndex = currentItems.findIndex(item => item.id === modalItem.id);
       if (currentIndex > 0) {
         setModalItem(currentItems[currentIndex - 1]);
-        
+        setIsImageLoaded(false);
       }
     }
   };

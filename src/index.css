@@ -567,8 +567,8 @@ h2 {
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
     max-width: 90%;
     max-height: 90%;
-    min-width: 50%;
-    min-height: 50%;
+    min-width: 90%;
+    aspect-ratio: 2/1;
   }
   
   .modal-image {

@@ -5,6 +5,7 @@ import CardGrid from "./CardGrid";
 import Combobox from "./Combobox";
 import "react-widgets/styles.css";
 import InfoOverlay from "./ModalInfo";
+import LoadingContainer from "./LoadingContainer";
 import Pagination from "./Pagination";
 import { ExpandableFilter } from "./ExpandableFilter"; 
 
@@ -178,16 +179,24 @@ function App() {
   if (error) {
     return (
       <p>
-        {error.message}, if you get this error, the free API I used might have stopped working, but I created a simple example that demonstrates how this works,{" "}
-        <a href="https://codepen.io/Spruce_khalifa/pen/mdXEVKq">check it out</a>
+        {error.message}, if you get this error, the free API I used might have stopped working.
       </p>
     );
   } else if (!isLoaded) {
-    return <>loading...</>;
+    return (
+      <div style={{ 
+        display: "flex", 
+        justifyContent: "center", 
+        alignItems: "center", 
+        height: "100vh"
+      }}>
+        <LoadingContainer />
+      </div>
+      
+    );
   } else {
     return (
       <div className="wrapper">
-        
         <button onClick={toggleHeader} className={`header-toggle-btn ${isHeaderVisible ? 'active' : ''}`}>
           <span className="hamburger-line"></span>
           <span className="hamburger-line"></span>

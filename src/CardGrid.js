@@ -1,8 +1,49 @@
-import React, { useState } from "react";
+import React, { useState, useEffect, useRef } from "react";
+import LoadingContainer from "./LoadingContainer";
 
 function CardGrid({ currentItems, isCardContentVisible }) {
   const [isOpen, setIsOpen] = useState(false);
   const [modalItem, setModalItem] = useState(null);
+  const [isImageLoaded, setIsImageLoaded] = useState(false);
+
+  const handleNext = () => {
+    if (modalItem) {
+      const currentIndex = currentItems.findIndex(item => item.id === modalItem.id);
+      if (currentIndex < currentItems.length - 1) {
+        setModalItem(currentItems[currentIndex + 1]);
+        
+      }
+    }
+  };
+
+  const handlePrevious = () => {
+    if (modalItem) {
+      const currentIndex = currentItems.findIndex(item => item.id === modalItem.id);
+      if (currentIndex > 0) {
+        setModalItem(currentItems[currentIndex - 1]);
+        
+      }
+    }
+  };
+
+  useEffect(() => {
+    const handleKeyDown = (event) => {
+      if (isOpen) {
+        if (event.key === "ArrowRight") {
+          handleNext();
+        } else if (event.key === "ArrowLeft") {
+          handlePrevious();
+        } else if (event.key === "Escape") {
+          setIsOpen(false);
+        }
+      }
+    };
+    
+    document.addEventListener("keydown", handleKeyDown);
+    return () => {
+      document.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [isOpen, modalItem]);
 
   return (
     <>
@@ -14,6 +55,7 @@ function CardGrid({ currentItems, isCardContentVisible }) {
               onClick={() => {
                 setModalItem(item);
                 setIsOpen(true);
+                setIsImageLoaded(false);
               }}
             >
               <img 
@@ -60,11 +102,25 @@ function CardGrid({ currentItems, isCardContentVisible }) {
         <div className="modal-overlay" onClick={() => setIsOpen(false)}>
           <div className="modal-content" onClick={(e) => e.stopPropagation()}>
             <button onClick={() => setIsOpen(false)} className="close-button">&times;</button>
-            <img 
-              src={modalItem.link} 
-              alt={`${modalItem.country} ${modalItem.denomination} ${modalItem.year}`} 
-              className="modal-image" 
-            />
+            <button onClick={handlePrevious} className="prev-button">&#12296;</button>
+           
+            {isImageLoaded ? (
+              <img 
+                src={modalItem.link} 
+                alt={`${modalItem.country} ${modalItem.denomination} ${modalItem.year}`} 
+                className="modal-image"
+                onLoad={() => setIsImageLoaded(true)}
+              />
+            ) : (
+              <LoadingContainer />
+            )}
+
+            <div className="modal-text">
+              <b>{`${modalItem.country}`}</b>
+            <br />
+            {`${modalItem.denomination} ${modalItem.year}`}
+            </div>
+            <button onClick={handleNext} className="next-button">&#12297;</button>
           </div>
         </div>
       )}

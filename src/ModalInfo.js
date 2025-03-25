@@ -16,7 +16,7 @@ function InfoOverlay({ onClose, countriesAmount, coinsAmount }) {
           </div>
          
           <br></br>
-          <button className="close-button" onClick={onClose}>
+          <button className="info-close-button" onClick={onClose}>
             Close
           </button>
         </div>

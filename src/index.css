@@ -570,6 +570,9 @@ h2 {
     min-width: 90%;
     aspect-ratio: 2/1;
   }
+  .modal-content.loading {
+    background: var(--lightgray);
+  }
   
   .modal-image {
 
@@ -582,6 +585,7 @@ h2 {
     height:auto;
   }
   .modal-image.loading {
+    background: red;
     display: none;
   }
 

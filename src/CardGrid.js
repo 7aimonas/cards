@@ -11,7 +11,7 @@ function CardGrid({ currentItems, isCardContentVisible }) {
       const currentIndex = currentItems.findIndex(item => item.id === modalItem.id);
       if (currentIndex < currentItems.length - 1) {
         setModalItem(currentItems[currentIndex + 1]);
-        setIsImageLoaded(false);
+        
         
       }
     }
@@ -22,7 +22,7 @@ function CardGrid({ currentItems, isCardContentVisible }) {
       const currentIndex = currentItems.findIndex(item => item.id === modalItem.id);
       if (currentIndex > 0) {
         setModalItem(currentItems[currentIndex - 1]);
-        setIsImageLoaded(false);
+        
       }
     }
   };
@@ -101,18 +101,20 @@ function CardGrid({ currentItems, isCardContentVisible }) {
 
       {isOpen && modalItem && (
         <div className="modal-overlay" onClick={() => setIsOpen(false)}>
-          <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+          <div className={`modal-content ${isImageLoaded ? "" : "loading"}`} onClick={(e) => e.stopPropagation()}>
             <button onClick={() => setIsOpen(false)} className="close-button">&times;</button>
             <button onClick={handlePrevious} className="prev-button">&#12296;</button>
            
-            
-              <img 
-                src={modalItem.link} 
-                alt={`${modalItem.country} ${modalItem.denomination} ${modalItem.year}`} 
-                onLoad={() => setIsImageLoaded(true)}
-                className={`modal-image ${isImageLoaded ? "" : "loading"}`}
-              />
-            
+          
+
+            <img 
+              src={modalItem.link} 
+              alt={`${modalItem.country} ${modalItem.denomination} ${modalItem.year}`} 
+              onLoad={() => setIsImageLoaded(true)}
+              className={`modal-image ${isImageLoaded ? "" : "loading"}`}
+            />
+
+           
 
             <div className={`modal-text ${isImageLoaded ? "" : "loading"}`}>
               <b>{`${modalItem.country}`}</b>

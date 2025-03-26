@@ -107,7 +107,7 @@ function CardGrid({ currentItems, filteredItems, isCardContentVisible }) {
               
               <ModalImage 
               src={item.img} 
-              alt={`${item.country} ${item.denomination} ${modalItem.year}`} 
+              alt={`${item.country} ${item.denomination} ${item.year}`} 
             />
 
 {/* 

@@ -108,7 +108,7 @@ function CardGrid({ currentItems, filteredItems, isCardContentVisible }) {
            
         
                 
-            {!isImageLoaded ? 
+            {isImageLoaded ? 
 
                 <img 
                   onLoad={() => setIsImageLoaded(true)}

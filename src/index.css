@@ -482,31 +482,7 @@ h2 {
     margin-top: 50px; /* Adjust this value to match the header's height */
   }  
 
-  @media (max-width: 1024px) {
-    .header {
-      grid-template-columns: repeat(2, 1fr); /* 2 items per row on medium screens */
-  }
-    .reset-filters-btn {
-      max-height: 100%;
-    }
-    .content.shifted {
-    margin-top: 110px;
-  }
-  }
   
-  @media (max-width: 600px) {
-    .header {
-      grid-template-columns: 1fr; /* 1 item per row on small screens */
-  }
-    .content.shifted {
-    margin-top: 220px;
-  }
-  }
-
-
-
-
-
 
   .combobox-container {
     position: relative;
@@ -605,7 +581,7 @@ h2 {
   }
 
   .modal-text.loading {
-    display: none;
+    
   }
   
   .close-button {
@@ -658,7 +634,34 @@ h2 {
     color: black;
   }
 
+  
 
+  @media (max-width: 1024px) {
+    .header {
+      grid-template-columns: repeat(2, 1fr); /* 2 items per row on medium screens */
+  }
+    .reset-filters-btn {
+      max-height: 100%;
+    }
+    .content.shifted {
+    margin-top: 110px;
+  }
+    .modal-text {
+      font-size: 16px;
+    }
+  }
+  
+  @media (max-width: 600px) {
+    .header {
+      grid-template-columns: 1fr; /* 1 item per row on small screens */
+  }
+    .content.shifted {
+    margin-top: 220px;
+  }
+    .modal-text {
+      font-size: 10px;
+    }
+  }
 
   
   

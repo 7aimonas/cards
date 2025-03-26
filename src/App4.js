@@ -244,6 +244,7 @@ function App() {
         <div className={`content ${isHeaderVisible ? 'shifted' : ''}`}>
           <CardGrid 
             currentItems={currentItems} 
+            filteredItems={filteredItems}
             isCardContentVisible={isCardContentVisible} 
           />
         </div>

@@ -1,16 +1,16 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect } from "react";
 import LoadingContainer from "./LoadingContainer";
 
-function CardGrid({ currentItems, isCardContentVisible }) {
+function CardGrid({ currentItems, filteredItems, isCardContentVisible }) {
   const [isOpen, setIsOpen] = useState(false);
   const [modalItem, setModalItem] = useState(null);
   const [isImageLoaded, setIsImageLoaded] = useState(false);
 
   const handleNext = () => {
     if (modalItem) {
-      const currentIndex = currentItems.findIndex(item => item.id === modalItem.id);
-      if (currentIndex < currentItems.length - 1) {
-        setModalItem(currentItems[currentIndex + 1]);
+      const currentIndex = filteredItems.findIndex(item => item.id === modalItem.id);
+      if (currentIndex < filteredItems.length - 1) {
+        setModalItem(filteredItems[currentIndex + 1]);
         setIsImageLoaded(false);
         
       }
@@ -19,9 +19,9 @@ function CardGrid({ currentItems, isCardContentVisible }) {
 
   const handlePrevious = () => {
     if (modalItem) {
-      const currentIndex = currentItems.findIndex(item => item.id === modalItem.id);
+      const currentIndex = filteredItems.findIndex(item => item.id === modalItem.id);
       if (currentIndex > 0) {
-        setModalItem(currentItems[currentIndex - 1]);
+        setModalItem(filteredItems[currentIndex - 1]);
         setIsImageLoaded(false);
       }
     }
@@ -106,16 +106,22 @@ function CardGrid({ currentItems, isCardContentVisible }) {
             <button onClick={() => setIsOpen(false)} className="close-button">&times;</button>
             <button onClick={handlePrevious} className="prev-button">&#12296;</button>
            
-          
+        
+                
+            {!isImageLoaded ? 
 
-            <img 
-              onLoad={() => setIsImageLoaded(true)}
-              src={modalItem.link} 
-              alt={`${modalItem.country} ${modalItem.denomination} ${modalItem.year}`} 
-              className={`modal-image ${isImageLoaded ? "" : "loading"}`}
-            />
-
-           
+                <img 
+                  onLoad={() => setIsImageLoaded(true)}
+                  src={modalItem.link} 
+                  alt={`${modalItem.country} ${modalItem.denomination} ${modalItem.year}`} 
+                  className={`modal-image ${isImageLoaded ? "" : "loading"}`}
+                /> 
+              :
+                (
+                
+                <div>Loading</div>
+                )
+            }
 
             <div className={`modal-text ${isImageLoaded ? "" : "loading"}`}>
               <b>{`${modalItem.country}`}</b>

@@ -571,7 +571,7 @@ h2 {
     aspect-ratio: 2/1;
   }
   .modal-content.loading {
-    background: var(--lightgray);
+    background: var(--lightergray);
   }
   
   .modal-image {
@@ -585,7 +585,6 @@ h2 {
     height:auto;
   }
   .modal-image.loading {
-    background: red;
     display: none;
   }
 

@@ -520,8 +520,6 @@ h2 {
   
 
 
-
-
   .modal-overlay {
     z-index: 15;
     position: fixed;
@@ -547,7 +545,18 @@ h2 {
     aspect-ratio: 2/1;
   }
   .modal-content.loading {
+  }
+
+  .loading-modal-image {
    
+    margin: 0 auto;
+    display: flex; 
+    justify-content: center;
+    align-items: center; 
+    height: auto;
+    max-height: 90vh;
+    aspect-ratio: 2/1;
+  
   }
   
   .modal-image {
@@ -570,7 +579,7 @@ h2 {
     background: none;
     border: none;
     color: var(--gray);
-    font-size: 24px;
+    font-size: 14px;
     text-align: center;
     padding: 0px;
     -webkit-user-select: none; /* Safari */
@@ -645,7 +654,7 @@ h2 {
     margin-top: 110px;
   }
     .modal-text {
-      font-size: 16px;
+      font-size: 10px;
     }
   }
   
@@ -657,7 +666,7 @@ h2 {
     margin-top: 220px;
   }
     .modal-text {
-      font-size: 10px;
+      font-size: 8px;
     }
   }
 

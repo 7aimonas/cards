@@ -185,10 +185,11 @@ function App() {
   } else if (!isLoaded) {
     return (
       <div style={{ 
-        display: "flex", 
-        justifyContent: "center", 
-        alignItems: "center", 
-        height: "100vh"
+        position: "fixed", 
+        inset: "0px",
+        width: "fit-content",
+        height: "fit-content",
+        margin: "auto"
       }}>
         <LoadingContainer />
       </div>

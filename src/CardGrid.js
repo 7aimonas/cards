@@ -4,9 +4,7 @@ import LoadingContainer from "./LoadingContainer";
 function CardGrid({ currentItems, filteredItems, isCardContentVisible }) {
   const [isOpen, setIsOpen] = useState(false);
   const [modalItem, setModalItem] = useState(null);
-  const [isImageLoaded, setIsImageLoaded] = useState(false);
-  console.log(isImageLoaded);
-
+  
   const handleNext = () => {
     if (modalItem) {
       const currentIndex = filteredItems.findIndex(item => item.id === modalItem.id);
@@ -51,23 +49,23 @@ function CardGrid({ currentItems, filteredItems, isCardContentVisible }) {
       return [ref, loaded];
     };
 
-    const ModalImage = ({ src }) => {
+    const ModalImage = ({ src, alt }) => {
       const [ref, loaded] = useImageLoaded();
 
       return (
         <div>
           {!loaded && 
-            <div style={{ 
-              display: "flex", 
-              justifyContent: "center", 
-              alignItems: "center", 
-              height: "80vh"
-            }}>
+            <div className="loading-modal-image">
               <LoadingContainer />
             </div>
           
           }  {/* Show a loading state */}
-          <img ref ={ref} src={modalItem.link} alt="alt text" style={{ display: loaded ? "block" : "none" }} />
+          <img 
+            ref={ref} 
+            src={src} 
+            alt={alt} 
+            style={{ display: loaded ? "block" : "none" }} 
+          />
         </div>
       );
     };
@@ -104,14 +102,21 @@ function CardGrid({ currentItems, filteredItems, isCardContentVisible }) {
               onClick={() => {
                 setModalItem(item);
                 setIsOpen(true);
-                
-                
               }}
             >
+              
+              <ModalImage 
+              src={item.img} 
+              alt={`${item.country} ${item.denomination} ${modalItem.year}`} 
+            />
+
+{/* 
               <img 
                 src={item.img || "https://lh3.googleusercontent.com/pw/AP1GczPRdJCisYdBa0OwGwJ5UmWVeBi3ZHNUq02HrNGQjpUw9HDyehwb_Q3_3J2cBFgfMv7yUJCH8cuMdxeiguNQ1GcGcF3ZQ04YFCsouCgCAZ83-QvxV_zgWMQnJ2hJGp_egVnp570bT1P8k2Hs6PYNjNpt=w300-h150-s-no-gm?authuser=0"} 
                 alt={`${item.country} ${item.denomination} ${item.year}`}
               />
+
+*/} 
             </div>
 
             <div className={`card-content ${isCardContentVisible ? "" : "hide"}`}>
@@ -150,12 +155,15 @@ function CardGrid({ currentItems, filteredItems, isCardContentVisible }) {
 
       {isOpen && modalItem && (
         <div className="modal-overlay" onClick={() => setIsOpen(false)}>
-          <div className={`modal-content ${isImageLoaded ? "" : "loading"}`} onClick={(e) => e.stopPropagation()}>
+          <div className="modal-content" onClick={(e) => e.stopPropagation()}>
             <button onClick={() => setIsOpen(false)} className="close-button">&times;</button>
             <button onClick={handlePrevious} className="prev-button">&#12296;</button>
       
 
-            <ModalImage />
+            <ModalImage 
+              src={modalItem.link} 
+              alt={`${modalItem.country} ${modalItem.denomination} ${modalItem.year}`} 
+            />
 
 {/* 
                 <img 
@@ -166,7 +174,7 @@ function CardGrid({ currentItems, filteredItems, isCardContentVisible }) {
                 /> 
 */}
 
-            <div className={`modal-text ${isImageLoaded ? "" : "loading"}`}>
+            <div className="modal-text">
               <b>{`${modalItem.country}`}</b>
             <br />
             {`${modalItem.denomination} ${modalItem.year}`}

@@ -547,7 +547,7 @@ h2 {
     aspect-ratio: 2/1;
   }
   .modal-content.loading {
-    background: var(--lightergray);
+   
   }
   
   .modal-image {
@@ -557,11 +557,9 @@ h2 {
     height: auto;
     max-height: 90vh;
     border-radius: 8px;
-   
-    height:auto;
   }
   .modal-image.loading {
-    display: none;
+    
   }
 
   .modal-text {
@@ -634,7 +632,7 @@ h2 {
     color: black;
   }
 
-  
+
 
   @media (max-width: 1024px) {
     .header {

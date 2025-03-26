@@ -1,18 +1,17 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import LoadingContainer from "./LoadingContainer";
 
 function CardGrid({ currentItems, filteredItems, isCardContentVisible }) {
   const [isOpen, setIsOpen] = useState(false);
   const [modalItem, setModalItem] = useState(null);
   const [isImageLoaded, setIsImageLoaded] = useState(false);
+  console.log(isImageLoaded);
 
   const handleNext = () => {
     if (modalItem) {
       const currentIndex = filteredItems.findIndex(item => item.id === modalItem.id);
       if (currentIndex < filteredItems.length - 1) {
         setModalItem(filteredItems[currentIndex + 1]);
-        setIsImageLoaded(false);
-        
       }
     }
   };
@@ -22,10 +21,59 @@ function CardGrid({ currentItems, filteredItems, isCardContentVisible }) {
       const currentIndex = filteredItems.findIndex(item => item.id === modalItem.id);
       if (currentIndex > 0) {
         setModalItem(filteredItems[currentIndex - 1]);
-        setIsImageLoaded(false);
       }
     }
   };
+
+
+
+    const useImageLoaded = () => {
+      const [loaded, setLoaded] = useState(false);
+      const ref = useRef(null);
+
+      useEffect(() => {
+        const image = ref.current;
+        if (!image) return;
+        // checking if already loaded
+        if (image.complete && image.naturalHeight !== 0) {
+          setLoaded(true);
+          return;
+        }
+
+        //load event listener
+        const handleLoad = () => setLoaded(true);
+        image.addEventListener("load", handleLoad);
+
+        //cleanup event listener on unmount
+        return () => image.removeEventListener("load", handleLoad);
+      }, [ref.current]); // runs when ref.current changes
+
+      return [ref, loaded];
+    };
+
+    const ModalImage = ({ src }) => {
+      const [ref, loaded] = useImageLoaded();
+
+      return (
+        <div>
+          {!loaded && 
+            <div style={{ 
+              display: "flex", 
+              justifyContent: "center", 
+              alignItems: "center", 
+              height: "80vh"
+            }}>
+              <LoadingContainer />
+            </div>
+          
+          }  {/* Show a loading state */}
+          <img ref ={ref} src={modalItem.link} alt="alt text" style={{ display: loaded ? "block" : "none" }} />
+        </div>
+      );
+    };
+
+
+
 
   useEffect(() => {
     const handleKeyDown = (event) => {
@@ -105,23 +153,18 @@ function CardGrid({ currentItems, filteredItems, isCardContentVisible }) {
           <div className={`modal-content ${isImageLoaded ? "" : "loading"}`} onClick={(e) => e.stopPropagation()}>
             <button onClick={() => setIsOpen(false)} className="close-button">&times;</button>
             <button onClick={handlePrevious} className="prev-button">&#12296;</button>
-           
-        
-                
-            {isImageLoaded ? 
+      
 
+            <ModalImage />
+
+{/* 
                 <img 
-                  onLoad={() => setIsImageLoaded(true)}
                   src={modalItem.link} 
                   alt={`${modalItem.country} ${modalItem.denomination} ${modalItem.year}`} 
                   className={`modal-image ${isImageLoaded ? "" : "loading"}`}
+                  onLoad={() => setIsImageLoaded(true)}
                 /> 
-              :
-                (
-                
-                <div>Loading</div>
-                )
-            }
+*/}
 
             <div className={`modal-text ${isImageLoaded ? "" : "loading"}`}>
               <b>{`${modalItem.country}`}</b>
